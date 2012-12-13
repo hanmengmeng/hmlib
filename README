@@ -1,0 +1,12 @@
+hmlib
+=====
+
+a common C++ library on Windows platform
+
+1. File operation
+2. String convert
+3. Xml read and write
+4. Http access
+5. File multithread download
+6. Thread
+7. File backup and restore
