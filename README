@@ -10,3 +10,4 @@ a common C++ library on Windows platform
 5. File multithread download
 6. Thread
 7. File backup and restore
+8. Cipher
