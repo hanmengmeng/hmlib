@@ -30,12 +30,18 @@
     <ClInclude Include="src\hm_string_convert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\hm_dir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hm_xml_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\hm_string_convert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hm_dir.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

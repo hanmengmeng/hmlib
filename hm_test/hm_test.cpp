@@ -47,9 +47,36 @@ void TestStringConvert()
     LPCSTR lp2 = u8str.c_str();
 }
 
+void TestEnumDir()
+{
+    std::vector<hm_string> fileList;
+    DirUtil::EnumFiles(L"D:\\workspace", fileList);
+
+    std::vector<hm_string> dirList;
+    DirUtil::EnumDirs(L"D:\\workspace", dirList);
+
+    std::vector<hm_string> fileList2;
+    DirUtil::EnumAllFiles(L"D:\\workspace\\apache-log4cxx-0.10.0", fileList2);
+}
+
+void TestDeleteDirectory()
+{
+    DirUtil::DeleteDirectory(L"D:\\test_git_workspace22");
+}
+
+void TestMoveDirectory()
+{
+    DirUtil::MoveDirectory(L"D:\\test_git_workspace33", L"D:\\test_git_workspace22");
+}
+
+void TestMakeDirectory()
+{
+    DirUtil::CreateParentDirectory(L"D:\\123\\456\\789");
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-    TestAddNode();
+    TestMakeDirectory();
 	return 0;
 }
 

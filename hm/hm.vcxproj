@@ -75,11 +75,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\hm_common.h" />
+    <ClInclude Include="src\hm_dir.h" />
     <ClInclude Include="src\hm_interface.h" />
     <ClInclude Include="src\hm_string_convert.h" />
     <ClInclude Include="src\hm_xml_parser.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\hm_dir.cpp" />
     <ClCompile Include="src\hm_string_convert.cpp" />
     <ClCompile Include="src\hm_xml_parser.cpp" />
   </ItemGroup>
