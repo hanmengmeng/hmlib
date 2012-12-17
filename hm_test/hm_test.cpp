@@ -74,9 +74,17 @@ void TestMakeDirectory()
     DirUtil::CreateParentDirectory(L"D:\\123\\456\\789");
 }
 
+void TestReadFile()
+{
+    FileBuf fb(L"D:/skin.xml", FileBuf::FILE_MODE_READ);
+    char buf[4096];
+    int size = fb.Read(buf, 4096);
+    int fs = fb.GetFileSize();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-    TestMakeDirectory();
+    TestReadFile();
 	return 0;
 }
 

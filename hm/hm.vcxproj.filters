@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{96a36e8e-6d3b-40ce-8848-958b910b6878}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -33,6 +36,15 @@
     <ClInclude Include="src\hm_dir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\hm_file_buf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\sha1\sha1.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hm_hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hm_xml_parser.cpp">
@@ -42,6 +54,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\hm_dir.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hm_file_buf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\sha1\sha1.c">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hm_hash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
