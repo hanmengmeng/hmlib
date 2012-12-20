@@ -2,8 +2,9 @@
 #define HM_INTERFACE_H
 
 #include "hm_xml_parser.h"
-#include "hm_string_convert.h"
+#include "hm_string.h"
 #include "hm_dir.h"
 #include "hm_file_buf.h"
+#include "hm_backup.h"
 
 #endif

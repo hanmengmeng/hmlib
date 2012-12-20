@@ -1,13 +1,16 @@
 hmlib
 =====
 
-a common C++ library on Windows platform
+A common C++ library on Windows platform
+Avoid reinventing wheel at work.
 
-1. File operation
-2. String convert
-3. Xml read and write
+1. File operation (ok)
+2. String convert (ok)
+3. Xml read and write (ok)
 4. Http access
 5. File multithread download
 6. Thread
 7. File backup and restore
 8. Cipher
+9. Log print
+10. Memory pool

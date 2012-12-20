@@ -187,6 +187,28 @@ bool DirUtil::EnumFilesOrDir( const hm_string &path, std::vector<hm_string> &fil
     return true;
 }
 
+bool DirUtil::MakeTempFile( hm_string &dirPath )
+{
+    hm_string regularPath = MakePathRegular(dirPath);
+    if ( regularPath.length() > 0 
+        && regularPath.at(regularPath.length() - 1) != DEFAULT_PATH_SPLITER)
+    {
+        regularPath.push_back(DEFAULT_PATH_SPLITER);
+    }
+    regularPath.append(_T("fnXXXXXX"));
+
+    TCHAR szPath[MAX_PATH];
+    memset(szPath, 0, MAX_PATH);
+    _tcsncpy(szPath, regularPath.c_str(), regularPath.size());
+    if (_tmktemp_s(szPath, _tcslen(szPath)+1) != 0)
+    {
+        return false;
+    }
+    dirPath = szPath;
+
+    return true;
+}
+
 
 hm::DirUtil::DirUtil()
 {

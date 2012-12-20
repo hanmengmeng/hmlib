@@ -84,7 +84,11 @@ void TestReadFile()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    TestReadFile();
+    BackupMgr bm(L"D:\\testgit3");
+    bm.AddFile(NULL, NULL);
+    bm.AddFile(NULL, NULL);
+    object_id id;
+    bm.Finish(id);
 	return 0;
 }
 

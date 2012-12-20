@@ -13,6 +13,16 @@
 #endif
 #endif
 
+#define hm_wstring std::wstring
+#define hm_astring std::string
+
 typedef unsigned long long hm_long_64;
+
+#define HASH_SHA1_LEN 20
+
+typedef struct object_id
+{
+    unsigned char id[HASH_SHA1_LEN];
+}object_id;
 
 #endif

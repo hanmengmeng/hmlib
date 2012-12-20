@@ -1,5 +1,11 @@
 #include "hm_hash.h"
+extern "C"
+{
 #include "sha1.h"
+};
+
+namespace hm
+{
 
 class Sha1HashImpl
 {
@@ -56,7 +62,7 @@ void Sha1Hash::Update( const void *data, size_t len )
     return mHashImpl->Update(data, len);
 }
 
-void Sha1Hash::Final( unsigned char out[20] )
+void Sha1Hash::Final( unsigned char out[HASH_SHA1_LEN] )
 {
     return mHashImpl->Final(out);
 }
@@ -65,4 +71,6 @@ void Sha1Hash::Reset()
 {
     return mHashImpl->Reset();
 }
+
+} // namespace hm
 

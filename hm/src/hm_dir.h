@@ -20,6 +20,7 @@ public:
     static bool IsDirectoryExist(const hm_string &path);
     static bool IsFileExist(const hm_string &path);
     static bool CreateParentDirectory(const hm_string &path);
+    static bool MakeTempFile(hm_string &dirPath);
 
     // Make path to use backslash
     static hm_string MakePathRegular(const hm_string &path);

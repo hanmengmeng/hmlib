@@ -80,20 +80,22 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\hm_backup.h" />
     <ClInclude Include="src\hm_common.h" />
     <ClInclude Include="src\hm_dir.h" />
     <ClInclude Include="src\hm_file_buf.h" />
     <ClInclude Include="src\hm_hash.h" />
     <ClInclude Include="src\hm_interface.h" />
-    <ClInclude Include="src\hm_string_convert.h" />
+    <ClInclude Include="src\hm_string.h" />
     <ClInclude Include="src\hm_xml_parser.h" />
     <ClInclude Include="ThirdParty\sha1\sha1.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\hm_backup.cpp" />
     <ClCompile Include="src\hm_dir.cpp" />
     <ClCompile Include="src\hm_file_buf.cpp" />
     <ClCompile Include="src\hm_hash.cpp" />
-    <ClCompile Include="src\hm_string_convert.cpp" />
+    <ClCompile Include="src\hm_string.cpp" />
     <ClCompile Include="src\hm_xml_parser.cpp" />
     <ClCompile Include="ThirdParty\sha1\sha1.c" />
   </ItemGroup>
