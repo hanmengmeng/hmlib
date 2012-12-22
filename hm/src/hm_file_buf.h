@@ -11,13 +11,14 @@ class IFileBuf
 {
 public:
     ~IFileBuf(){}
-    virtual bool Open(const wchar_t *path, int mode) = 0;
+    virtual bool Open(const t_char *path, int mode) = 0;
     virtual void Close() = 0;
-    virtual size_t Write(void *buf, size_t len) = 0;
-    virtual size_t Read(void *buf, size_t len) = 0;
-    virtual hm_long_64 GetFileSize() = 0;
-    virtual bool Flush(void *buf, size_t len) = 0;
-    virtual bool Reserve(void **buf, size_t len) = 0;
+    virtual t_size Write(void *buf, t_size len) = 0;
+    virtual t_size Read(void *buf, t_size len) = 0;
+    virtual t_size GetFileSize() = 0;
+    virtual bool Flush(void *buf, t_size len) = 0;
+    virtual bool Reserve(void **buf, t_size len) = 0;
+    virtual const t_char *GetFilePath() = 0;
 };
 
 class IHash
@@ -25,7 +26,7 @@ class IHash
 public:
     ~IHash(){}
     virtual void HashReset() = 0;
-    virtual bool HashResult(unsigned char *hashResult, size_t len) = 0;
+    virtual bool HashResult(unsigned char *hashResult, t_size len) = 0;
 };
 
 // Read or write file in binary mode,
@@ -40,41 +41,43 @@ public:
         FILE_MODE_APPEND = 1 << 2,
     };
     FileBuf();
-    FileBuf(const wchar_t *path, int mode);
-    FileBuf(const wchar_t *path, int mode, size_t bufSize);
+    FileBuf(const t_char *path, int mode);
+    FileBuf(const t_char *path, int mode, t_size bufSize);
     ~FileBuf();
-    virtual bool Open(const wchar_t *path, int mode);
+    virtual bool Open(const t_char *path, int mode);
     virtual void Close();
-    virtual size_t Write(void *buf, size_t len);
-    virtual size_t Read(void *buf, size_t len);
-    virtual hm_long_64 GetFileSize();
-    virtual bool Flush(void *buf, size_t len);
-    virtual bool Reserve(void **buf, size_t len);
+    virtual t_size Write(void *buf, t_size len);
+    virtual t_size Read(void *buf, t_size len);
+    virtual t_size GetFileSize();
+    virtual bool Flush(void *buf, t_size len);
+    virtual bool Reserve(void **buf, t_size len);
+    virtual const t_char *GetFilePath();
 
 private:
     FileBuf(const FileBuf &fp);
     FileBuf &operator=(const FileBuf &fp);
-    void Init(const wchar_t *path, int mode);
+    void Init(const t_char *path, int mode);
 
 protected:
     FILE *mFd;
-    hm_long_64 mFileSize;
+    t_size mFileSize;
     char *mBuf;
-    size_t mCurrPos;
-    size_t mBufSize;
+    t_size mCurrPos;
+    t_size mBufSize;
+    t_string mFilePath;
 };
 
 class HashFileBuf : public FileBuf, public IHash
 {
 public:
     HashFileBuf();
-    HashFileBuf(const wchar_t *path, int mode);
-    HashFileBuf(const wchar_t *path, int mode, size_t bufSize);
+    HashFileBuf(const t_char *path, int mode);
+    HashFileBuf(const t_char *path, int mode, t_size bufSize);
     ~HashFileBuf();
     virtual void HashReset();
-    virtual bool HashResult(unsigned char *hashResult, size_t len);
-    virtual bool Flush(void *buf, size_t len);
-    virtual size_t Read(void *buf, size_t len);
+    virtual bool HashResult(unsigned char *hashResult, t_size len);
+    virtual bool Flush(void *buf, t_size len);
+    virtual t_size Read(void *buf, t_size len);
 
 private:
     Sha1Hash mHash;

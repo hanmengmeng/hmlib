@@ -22,7 +22,7 @@ StringConvert::StringConvert(const char *str)
     mStrW = L"";
 }
 
-StringConvert::StringConvert( const wchar_t *str )
+StringConvert::StringConvert( const t_char *str )
 {
     if (NULL == str)
     {
@@ -167,13 +167,13 @@ std::wstring StringConvert::AnsiToUnicode(const char* buf)
     int len = ::MultiByteToWideChar(CP_ACP, 0, buf, -1, NULL, 0);
     if (len == 0) return L"";
 
-    std::vector<wchar_t> unicode(len);
+    std::vector<t_char> unicode(len);
     ::MultiByteToWideChar(CP_ACP, 0, buf, -1, &unicode[0], len);
 
     return &unicode[0];
 }
 
-std::string StringConvert::UnicodeToAnsi(const wchar_t* buf)
+std::string StringConvert::UnicodeToAnsi(const t_char* buf)
 {
     int len = ::WideCharToMultiByte(CP_ACP, 0, buf, -1, NULL, 0, NULL, NULL);
     if (len == 0) return "";
@@ -189,13 +189,13 @@ std::wstring StringConvert::Utf8ToUnicode(const char* buf)
     int len = ::MultiByteToWideChar(CP_UTF8, 0, buf, -1, NULL, 0);
     if (len == 0) return L"";
 
-    std::vector<wchar_t> unicode(len);
+    std::vector<t_char> unicode(len);
     ::MultiByteToWideChar(CP_UTF8, 0, buf, -1, &unicode[0], len);
 
     return &unicode[0];
 }
 
-std::string StringConvert::UnicodeToUtf8(const wchar_t* buf)
+std::string StringConvert::UnicodeToUtf8(const t_char* buf)
 {
     int len = ::WideCharToMultiByte(CP_UTF8, 0, buf, -1, NULL, 0, NULL, NULL);
     if (len == 0) return "";

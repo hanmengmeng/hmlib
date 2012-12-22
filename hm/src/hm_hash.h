@@ -14,9 +14,10 @@ public:
     ~Sha1Hash();
 
     void Reset();
-    void Update(const void *data, size_t len);
+    void Update(const void *data, t_size len);
     void Final(unsigned char out[HASH_SHA1_LEN]);
 
+    static std::string ToString(const object_id &oid);
 private:
     Sha1HashImpl *mHashImpl;
 };

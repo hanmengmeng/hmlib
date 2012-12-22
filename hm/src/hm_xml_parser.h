@@ -42,7 +42,7 @@ class XmlParserImpl;
 class XmlParser : public IXmlParser
 {
 public:
-    XmlParser(const hm_string &path, const char *rootNodeName = NULL);
+    XmlParser(const t_string &path, const char *rootNodeName = NULL);
     ~XmlParser();
 
     virtual bool AddNode(const char *name, const char *value, const std::vector<NodeAttribute> &attrs);

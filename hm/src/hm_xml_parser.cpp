@@ -35,7 +35,7 @@ bool operator== (const Node &n1, const Node &n2)
 class XmlParserImpl : public IXmlParser
 {
 public:
-    XmlParserImpl(const hm_string &path, const char *rootNodeName = NULL);
+    XmlParserImpl(const t_string &path, const char *rootNodeName = NULL);
     ~XmlParserImpl();
 
     virtual bool AddNode(const char *name, const char *value, const std::vector<NodeAttribute> &attrs);
@@ -50,11 +50,11 @@ private:
     rapidxml::xml_document<> mDoc;
     rapidxml::xml_node<> *mRootNode;
     bool mHasModify;
-    hm_string mXmlPath;
+    t_string mXmlPath;
     std::vector<char> mFileBuffer;
 };
 
-XmlParserImpl::XmlParserImpl(const hm_string &path, const char *rootNodeName)
+XmlParserImpl::XmlParserImpl(const t_string &path, const char *rootNodeName)
 {
     if (_taccess(path.c_str(), 0) == 0)
     {
@@ -111,7 +111,7 @@ bool XmlParserImpl::AddNode( const char *name, const char *value, const std::vec
     // Create node
     xml_node<> *label = mDoc.allocate_node(node_element, mDoc.allocate_string(name), mDoc.allocate_string(value));
     mRootNode->append_node(label);
-    for (size_t i = 0; i < attrs.size(); i++)
+    for (t_size i = 0; i < attrs.size(); i++)
     {
         xml_attribute<> *att = mDoc.allocate_attribute(mDoc.allocate_string(attrs.at(i).attrName.c_str()), 
             mDoc.allocate_string(attrs.at(i).attrValue.c_str()));
@@ -200,7 +200,7 @@ Node XmlParserImpl::GetNode( xml_node<> *node )
     return val;
 }
 
-XmlParser::XmlParser( const hm_string &path, const char *rootNodeName )
+XmlParser::XmlParser( const t_string &path, const char *rootNodeName )
 {
     impl = new XmlParserImpl(path, rootNodeName);
 }

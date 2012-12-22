@@ -7,6 +7,8 @@
 #include <locale>
 #include <functional>
 
+#include "hm_common.h"
+
 namespace hm
 {
 
@@ -14,7 +16,7 @@ class StringConvert
 {
 public:
     StringConvert(const char *str);
-    StringConvert(const wchar_t *str);
+    StringConvert(const t_char *str);
     StringConvert(const std::string &str);
     StringConvert(const std::wstring &str);
     ~StringConvert();
@@ -26,9 +28,9 @@ public:
 private:
     bool IsUtf8(const char* str, int length);
     std::wstring AnsiToUnicode(const char* buf);
-    std::string UnicodeToAnsi(const wchar_t* buf);
+    std::string UnicodeToAnsi(const t_char* buf);
     std::wstring Utf8ToUnicode(const char* buf);
-    std::string UnicodeToUtf8(const wchar_t* buf);
+    std::string UnicodeToUtf8(const t_char* buf);
     std::string MbToUtf8(const char *buf);
     std::string Utf8ToMb(const char *buf);
 

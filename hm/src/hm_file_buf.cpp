@@ -6,12 +6,12 @@
 namespace hm
 {
 
-FileBuf::FileBuf( const wchar_t *path, int mode )
+FileBuf::FileBuf( const t_char *path, int mode )
 {
     Init(path, mode);
 }
 
-FileBuf::FileBuf( const wchar_t *path, int mode, size_t bufSize )
+FileBuf::FileBuf( const t_char *path, int mode, t_size bufSize )
 {
     Init(path, mode);
     mBuf = new char[bufSize];
@@ -33,7 +33,7 @@ FileBuf::~FileBuf()
     }
 }
 
-size_t FileBuf::Write( void *buf, size_t len )
+t_size FileBuf::Write( void *buf, t_size len )
 {
     if (NULL == mFd)
     {
@@ -41,7 +41,7 @@ size_t FileBuf::Write( void *buf, size_t len )
     }
 
     // Space left is not enough
-    size_t spaceLeft = mBufSize - mCurrPos;
+    t_size spaceLeft = mBufSize - mCurrPos;
     if (len > spaceLeft)
     {
         if (Flush(buf, len))
@@ -60,7 +60,7 @@ size_t FileBuf::Write( void *buf, size_t len )
     return len;
 }
 
-size_t FileBuf::Read( void *buf, size_t len )
+t_size FileBuf::Read( void *buf, t_size len )
 {
     if (NULL == mFd)
     {
@@ -69,12 +69,12 @@ size_t FileBuf::Read( void *buf, size_t len )
     return fread(buf, 1, len, mFd);
 }
 
-hm_long_64 FileBuf::GetFileSize()
+t_size FileBuf::GetFileSize()
 {
     return mFileSize;
 }
 
-bool FileBuf::Flush(void *buf, size_t len)
+bool FileBuf::Flush(void *buf, t_size len)
 {
     if (NULL == mFd)
     {
@@ -83,7 +83,7 @@ bool FileBuf::Flush(void *buf, size_t len)
 
     if (mCurrPos > 0) // Flush the buffer to disk
     {
-        size_t writeBufLen = 0;
+        t_size writeBufLen = 0;
         writeBufLen = fwrite(mBuf, 1, mCurrPos, mFd);
         mCurrPos -= writeBufLen;
         if (mCurrPos != 0)
@@ -101,9 +101,9 @@ bool FileBuf::Flush(void *buf, size_t len)
     }
 }
 
-bool FileBuf::Reserve( void **buf, size_t len )
+bool FileBuf::Reserve( void **buf, t_size len )
 {
-    size_t spaceLeft = mBufSize - mCurrPos;
+    t_size spaceLeft = mBufSize - mCurrPos;
     *buf = NULL;
 
     if (len > mBufSize)
@@ -124,8 +124,9 @@ bool FileBuf::Reserve( void **buf, size_t len )
     return true;
 }
 
-void FileBuf::Init( const wchar_t *path, int mode )
+void FileBuf::Init( const t_char *path, int mode )
 {
+    mFd = NULL;
     // Open the file and get the file size
     if (NULL != path && Open(path, mode))
     {
@@ -161,8 +162,17 @@ void FileBuf::Init( const wchar_t *path, int mode )
     mCurrPos = 0;
 }
 
-bool FileBuf::Open( const wchar_t *path, int mode )
+bool FileBuf::Open( const t_char *path, int mode )
 {
+    if (mFilePath == path && NULL != mFd) // Already opened
+    {
+        return true;
+    }
+    else if (NULL != mFd) // Already open another file
+    {
+        return false;
+    }
+
     if ((mode & FILE_MODE_WRITE) && (mode & FILE_MODE_READ))
     {
         if (_tfopen_s(&mFd, path, _T("w+b")) != 0)
@@ -202,6 +212,7 @@ bool FileBuf::Open( const wchar_t *path, int mode )
     {
         assert(0); // Unknown file mode
     }
+    mFilePath = path;
     return mFd != NULL;
 }
 
@@ -215,8 +226,13 @@ void FileBuf::Close()
     }
 }
 
+const t_char * FileBuf::GetFilePath()
+{
+    return mFilePath.c_str();
+}
 
-bool HashFileBuf::HashResult( unsigned char *hashResult, size_t len )
+
+bool HashFileBuf::HashResult( unsigned char *hashResult, t_size len )
 {
     if (len >= HASH_SHA1_LEN)
     {
@@ -229,7 +245,7 @@ bool HashFileBuf::HashResult( unsigned char *hashResult, size_t len )
     }
 }
 
-bool HashFileBuf::Flush(void *buf, size_t len)
+bool HashFileBuf::Flush(void *buf, t_size len)
 {
     if (mCurrPos > 0)
     {
@@ -239,20 +255,20 @@ bool HashFileBuf::Flush(void *buf, size_t len)
     return FileBuf::Flush(buf, len);
 }
 
-size_t HashFileBuf::Read( void *buf, size_t len )
+t_size HashFileBuf::Read( void *buf, t_size len )
 {
-    size_t readLen = FileBuf::Read(buf, len);
+    t_size readLen = FileBuf::Read(buf, len);
     mHash.Update(buf, readLen);
     return readLen;
 }
 
-HashFileBuf::HashFileBuf( const wchar_t *path, int mode )
+HashFileBuf::HashFileBuf( const t_char *path, int mode )
     :FileBuf(path, mode)
 {
     assert(mode == FILE_MODE_READ || mode == FILE_MODE_WRITE);
 }
 
-HashFileBuf::HashFileBuf( const wchar_t *path, int mode, size_t bufSize )
+HashFileBuf::HashFileBuf( const t_char *path, int mode, t_size bufSize )
     :FileBuf(path, mode, bufSize)
 {
     assert(mode == FILE_MODE_READ || mode == FILE_MODE_WRITE);

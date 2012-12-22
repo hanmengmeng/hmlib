@@ -7,31 +7,31 @@
 namespace hm
 {
 
-bool DirUtil::EnumFiles( const hm_string &path, std::vector<hm_string> &fileList )
+bool DirUtil::EnumFiles( const t_string &path, std::vector<t_string> &fileList )
 {
     return EnumFilesOrDir(path, fileList, ENUM_FILE);
 }
 
-bool DirUtil::EnumDirs( const hm_string &path, std::vector<hm_string> &dirList )
+bool DirUtil::EnumDirs( const t_string &path, std::vector<t_string> &dirList )
 {
     return EnumFilesOrDir(path, dirList, ENUM_DIR);
 }
 
-bool DirUtil::EnumAllFiles( const hm_string &path, std::vector<hm_string> &fileList )
+bool DirUtil::EnumAllFiles( const t_string &path, std::vector<t_string> &fileList )
 {
     if (!EnumFiles(path, fileList))
     {
         return false;
     }
 
-    std::vector<hm_string> dirList;
+    std::vector<t_string> dirList;
     if (!EnumDirs(path, dirList))
     {
         return false;
     }
 
     bool ret = true;
-    for (size_t i = 0; i < dirList.size(); i++)
+    for (t_size i = 0; i < dirList.size(); i++)
     {
         if (!EnumAllFiles(dirList.at(i), fileList))
         {
@@ -42,12 +42,12 @@ bool DirUtil::EnumAllFiles( const hm_string &path, std::vector<hm_string> &fileL
     return ret;
 }
 
-bool DirUtil::DeleteDirectory( const hm_string &path )
+bool DirUtil::DeleteDirectory( const t_string &path )
 {
     SHFILEOPSTRUCT FileOp;
     ZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));
 
-    hm_string strFromPath = MakePathRegular(path);
+    t_string strFromPath = MakePathRegular(path);
     // this string must be double-null terminated
     strFromPath.append(1, _T('\0'));
 
@@ -62,16 +62,16 @@ bool DirUtil::DeleteDirectory( const hm_string &path )
     return SHFileOperation(&FileOp) == 0;
 }
 
-bool DirUtil::MoveDirectory( const hm_string &fromPath, const hm_string &toPath )
+bool DirUtil::MoveDirectory( const t_string &fromPath, const t_string &toPath )
 {
     SHFILEOPSTRUCT FileOp;
     ZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));
 
-    hm_string strFromPath = MakePathRegular(fromPath);
+    t_string strFromPath = MakePathRegular(fromPath);
     // this string must be double-null terminated
     strFromPath.append(1, _T('\0'));
 
-    hm_string strToPath = MakePathRegular(toPath);
+    t_string strToPath = MakePathRegular(toPath);
     // this string must be double-null terminated
     strToPath.append(1, _T('\0'));
 
@@ -86,28 +86,28 @@ bool DirUtil::MoveDirectory( const hm_string &fromPath, const hm_string &toPath 
     return SHFileOperation(&FileOp) == 0;
 }
 
-bool DirUtil::IsDirectoryExist( const hm_string &path )
+bool DirUtil::IsDirectoryExist( const t_string &path )
 {
-    hm_string regularPath = MakePathRegular(path);
+    t_string regularPath = MakePathRegular(path);
     DWORD dwAttr = ::GetFileAttributes(regularPath.c_str());
     return (dwAttr != INVALID_FILE_ATTRIBUTES && (dwAttr & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-bool DirUtil::IsFileExist( const hm_string &path )
+bool DirUtil::IsFileExist( const t_string &path )
 {
-    hm_string regularPath = MakePathRegular(path);
+    t_string regularPath = MakePathRegular(path);
     DWORD dwAttributes = ::GetFileAttributes(regularPath.c_str());
     return (dwAttributes != INVALID_FILE_ATTRIBUTES) && (!(dwAttributes & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-bool DirUtil::CreateParentDirectory( const hm_string &path )
+bool DirUtil::CreateParentDirectory( const t_string &path )
 {
-    hm_string regularPath = MakePathRegular(path);
-    for (size_t i = 0; i < regularPath.length(); i++)
+    t_string regularPath = MakePathRegular(path);
+    for (t_size i = 0; i < regularPath.length(); i++)
     {
         if (DEFAULT_PATH_SPLITER == regularPath.at(i))
         {
-            hm_string p = regularPath.substr(0, i);
+            t_string p = regularPath.substr(0, i);
             if (!IsDirectoryExist(p))
             {
                 if (!::CreateDirectory(p.c_str(), NULL))
@@ -120,11 +120,11 @@ bool DirUtil::CreateParentDirectory( const hm_string &path )
     return true;
 }
 
-hm_string DirUtil::MakePathRegular( const hm_string &path )
+t_string DirUtil::MakePathRegular( const t_string &path )
 {
-    hm_string ret = path;
-    size_t count = ret.length();
-    for (size_t i = 0; i < count; i++)
+    t_string ret = path;
+    t_size count = ret.length();
+    for (t_size i = 0; i < count; i++)
     {
         if (_T('/') == ret[i])
         {
@@ -134,20 +134,20 @@ hm_string DirUtil::MakePathRegular( const hm_string &path )
     return ret;
 }
 
-bool DirUtil::EnumFilesOrDir( const hm_string &path, std::vector<hm_string> &fileList, int enumType)
+bool DirUtil::EnumFilesOrDir( const t_string &path, std::vector<t_string> &fileList, int enumType)
 {
     if (path.empty())
     {
         return false;
     }
 
-    hm_string strDirPath = MakePathRegular(path);
+    t_string strDirPath = MakePathRegular(path);
     if (strDirPath.find_last_of(DEFAULT_PATH_SPLITER) != strDirPath.length() - 1)
     {
         strDirPath.push_back(DEFAULT_PATH_SPLITER);
     }
 
-    hm_string filter = strDirPath;
+    t_string filter = strDirPath;
     filter.append(_T("*"));
 
     WIN32_FIND_DATA fd;
@@ -162,7 +162,7 @@ bool DirUtil::EnumFilesOrDir( const hm_string &path, std::vector<hm_string> &fil
         {
             if (!(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
             {
-                hm_string fp = strDirPath;
+                t_string fp = strDirPath;
                 fp.append(fd.cFileName);
                 fileList.push_back(fp);
             }
@@ -174,7 +174,7 @@ bool DirUtil::EnumFilesOrDir( const hm_string &path, std::vector<hm_string> &fil
                 && _tcscmp(fd.cFileName, _T("..")) != 0
                 && (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             {
-                hm_string fp = strDirPath;
+                t_string fp = strDirPath;
                 fp.append(fd.cFileName);
                 fileList.push_back(fp);
             }
@@ -187,9 +187,9 @@ bool DirUtil::EnumFilesOrDir( const hm_string &path, std::vector<hm_string> &fil
     return true;
 }
 
-bool DirUtil::MakeTempFile( hm_string &dirPath )
+bool DirUtil::MakeTempFile( t_string &dirPath )
 {
-    hm_string regularPath = MakePathRegular(dirPath);
+    t_string regularPath = MakePathRegular(dirPath);
     if ( regularPath.length() > 0 
         && regularPath.at(regularPath.length() - 1) != DEFAULT_PATH_SPLITER)
     {
@@ -207,6 +207,27 @@ bool DirUtil::MakeTempFile( hm_string &dirPath )
     dirPath = szPath;
 
     return true;
+}
+
+bool DirUtil::MoveFile( const t_string &fromPath, const t_string &toPath )
+{
+    return MoveDirectory(fromPath, toPath);
+}
+
+t_string DirUtil::MakeFilePath( const t_string &dirPath, const t_string &fileName )
+{
+    t_string strDirPath = MakePathRegular(dirPath);
+    if (strDirPath.find_last_of(DEFAULT_PATH_SPLITER) != strDirPath.length() - 1)
+    {
+        strDirPath.push_back(DEFAULT_PATH_SPLITER);
+    }
+    strDirPath.append(fileName);
+    return strDirPath;
+}
+
+bool DirUtil::DeleteFile( const t_string &filePath )
+{
+    return ::DeleteFileW(filePath.c_str());
 }
 
 

@@ -49,13 +49,13 @@ void TestStringConvert()
 
 void TestEnumDir()
 {
-    std::vector<hm_string> fileList;
+    std::vector<t_string> fileList;
     DirUtil::EnumFiles(L"D:\\workspace", fileList);
 
-    std::vector<hm_string> dirList;
+    std::vector<t_string> dirList;
     DirUtil::EnumDirs(L"D:\\workspace", dirList);
 
-    std::vector<hm_string> fileList2;
+    std::vector<t_string> fileList2;
     DirUtil::EnumAllFiles(L"D:\\workspace\\apache-log4cxx-0.10.0", fileList2);
 }
 
@@ -85,8 +85,9 @@ void TestReadFile()
 int _tmain(int argc, _TCHAR* argv[])
 {
     BackupMgr bm(L"D:\\testgit3");
-    bm.AddFile(NULL, NULL);
-    bm.AddFile(NULL, NULL);
+    bm.AddFile(L"D:\\ErrorReportUtils.java", L"ErrorReportUtils.java");
+    bm.AddFile(L"D:\\FileBuf.txt", L"FileBuf.txt");
+    bm.AddFile(L"D:\\2012-10-30-17-06-小米_M1.zip", L"2012-10-30-17-06-小米_M1.zip");
     object_id id;
     bm.Finish(id);
 	return 0;

@@ -14,7 +14,7 @@ public:
     ~Sha1HashImpl();
 
     void Reset();
-    void Update(const void *data, size_t len);
+    void Update(const void *data, t_size len);
     void Final(unsigned char out[20]);
 
 private:
@@ -31,7 +31,7 @@ Sha1HashImpl::~Sha1HashImpl()
 
 }
 
-void Sha1HashImpl::Update( const void *data, size_t len )
+void Sha1HashImpl::Update( const void *data, t_size len )
 {
     SHA1_Update(&mCtx, data, len);
 }
@@ -57,7 +57,7 @@ Sha1Hash::~Sha1Hash()
     delete mHashImpl;
 }
 
-void Sha1Hash::Update( const void *data, size_t len )
+void Sha1Hash::Update( const void *data, t_size len )
 {
     return mHashImpl->Update(data, len);
 }
@@ -70,6 +70,23 @@ void Sha1Hash::Final( unsigned char out[HASH_SHA1_LEN] )
 void Sha1Hash::Reset()
 {
     return mHashImpl->Reset();
+}
+
+std::string Sha1Hash::ToString(const object_id &oid)
+{
+    char to_hex[] = "0123456789abcdef";
+    char str[HASH_SHA1_STRING_LEN+1];
+    char *p = str;
+
+    t_size i = 0;
+    for (i = 0; i < sizeof(oid.id); i++)
+    {
+        *p++ = to_hex[oid.id[i] >> 4];
+        *p++ = to_hex[oid.id[i] & 0xf];
+    }
+    *p = '\0';
+
+    return str;
 }
 
 } // namespace hm

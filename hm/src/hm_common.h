@@ -5,20 +5,15 @@
 #include <Windows.h>
 #include <tchar.h>
 
-#ifndef hm_string
-#ifdef _UNICODE
-#define hm_string std::wstring
-#else
-#define hm_string std::string
-#endif
-#endif
+typedef unsigned long long t_long_64;
+typedef int t_error;
+typedef size_t t_size;
 
-#define hm_wstring std::wstring
-#define hm_astring std::string
-
-typedef unsigned long long hm_long_64;
+#define t_string std::wstring
+#define t_char wchar_t
 
 #define HASH_SHA1_LEN 20
+#define HASH_SHA1_STRING_LEN (HASH_SHA1_LEN*2)
 
 typedef struct object_id
 {

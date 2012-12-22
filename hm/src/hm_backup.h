@@ -16,12 +16,11 @@ typedef struct _FileEntry {
     unsigned int mode;
     unsigned int uid;
     unsigned int gid;
-    size_t file_size;
+    t_long_64 file_size;
 
     object_id oid;
 
     unsigned short flags;
-    unsigned short flags_extended;
 
     char *path;
 } FileEntry;
@@ -31,35 +30,64 @@ class IBackup
 public:
     virtual ~IBackup(){}
 
-    virtual int AddDir(const wchar_t *filePath, const wchar_t *relPath) = 0;
-    virtual int AddFile(const wchar_t *filePath, const wchar_t *relPath) = 0;
-    virtual int RemoveFile(const wchar_t *relPath) = 0;
-    virtual int Finish(object_id &oid) = 0;
+    virtual bool AddDir(const t_char *filePath, const t_char *relPath) = 0;
+    virtual bool AddDir(const t_char *filePath, const t_char *relPath, const struct _stat64 *st) = 0;
+    virtual bool AddFile(const t_char *filePath, const t_char *relPath) = 0;
+    virtual bool AddFile(const t_char *filePath, const t_char *relPath, const struct _stat64 *st) = 0;
+    virtual bool RemoveFile(const t_char *relPath) = 0;
+    virtual bool Finish(object_id &oid) = 0;
     virtual int GetFileList(const object_id &indexOid, std::vector<FileEntry> &fileList) = 0;
-
+    virtual t_error GetLastError() = 0;
 };
 
 class IBlob
 {
 public:
     virtual ~IBlob(){}
-    virtual bool CreateBlob(object_id &outObjId, const wchar_t *filePath) = 0;
+    virtual bool CreateBlob(object_id &outObjId, const t_char *filePath) = 0;
+    //virtual void SetBlobDirectory(const t_char *blobDir) = 0;
+
+    //virtual bool Init(t_size fileSize) = 0;
+    virtual t_size Write(void *buf, t_size len) = 0;
+    //virtual bool Finish(object_id &outOid) = 0;
+    virtual bool WriteFinish(object_id &outOid) = 0;
+
+    //virtual bool Init(const object_id &oid) = 0;
+    virtual t_size Read(void *buf, t_size len) = 0;
+    //virtual bool Finish() = 0;
+
+    virtual t_size GetBlobSize() = 0;
+};
+
+class BlobObjectFactory
+{
+public:
+    static IBlob* GetDirectBlob();
 };
 
 class FileIndex;
 class BackupMgr : public IBackup
 {
 public:
-    BackupMgr(const wchar_t *backupDir);
+    BackupMgr(const t_char *backupDir);
     ~BackupMgr();
-    virtual int AddDir(const wchar_t *filePath, const wchar_t *relPath);
-    virtual int AddFile(const wchar_t *filePath, const wchar_t *relPath);
-    virtual int RemoveFile(const wchar_t *relPath);
-    virtual int Finish(object_id &oid);
+    virtual bool AddDir(const t_char *filePath, const t_char *relPath);
+    virtual bool AddDir(const t_char *filePath, const t_char *relPath, const struct _stat64 *st);
+    virtual bool AddFile(const t_char *filePath, const t_char *relPath);
+    virtual bool AddFile(const t_char *filePath, const t_char *relPath, const struct _stat64 *st);
+    virtual bool RemoveFile(const t_char *relPath);
+    virtual bool Finish(object_id &oid);
     virtual int GetFileList(const object_id &indexOid, std::vector<FileEntry> &fileList);
+    virtual t_error GetLastError();
+    virtual void GetTagList(std::vector<std::string> &tags);
+
+    void InitFileEntry(FileEntry *fe, const struct _stat64 *st);
 
 private:
     FileIndex *mFi;
+    //IBlob *mBlober;
+    t_error mLastError;
+    t_string mBackupDir;
 };
 
 } // namespace hm
