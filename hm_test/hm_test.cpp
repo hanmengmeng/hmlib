@@ -82,14 +82,129 @@ void TestReadFile()
     int fs = fb.GetFileSize();
 }
 
+
+struct TreeNode
+{
+    struct TreeNode *left;
+    struct TreeNode *right;
+    int value;
+};
+
+void CreateTempTree(struct TreeNode *node, int depth)
+{
+    if (depth <= 1)
+    {
+        return;
+    }
+    struct TreeNode *left = new struct TreeNode;
+    left->left = NULL;
+    left->right = NULL;
+    left->value = rand()%1000;
+    struct TreeNode *right = new struct TreeNode;
+    right->left = NULL;
+    right->right = NULL;
+    right->value = rand()%1000;
+    node->left = left;
+    node->right = right;
+
+    CreateTempTree(node->left, depth - 1);
+    CreateTempTree(node->right, depth - 1);
+}
+
+void ReadTreeWide(struct TreeNode *root, QueueA<struct TreeNode *> *q)
+{
+    if (0 == root)
+    {
+        return;
+    }
+
+    q->PushBack(root);
+
+    while (q->GetSize() > 0)
+    {
+        struct TreeNode *tn = q->PopFront();
+        printf("%d ", tn->value);
+        if (NULL != tn->left)
+        {
+            q->PushBack(tn->left);
+        }
+        if (NULL != tn->right)
+        {
+            q->PushBack(tn->right);
+        }
+    }
+}
+
+void ReadTreeDepth(struct TreeNode *root)
+{
+    if (NULL == root)
+    {
+        return;
+    }
+    Stack<struct TreeNode*> s;
+    struct TreeNode *n = root;
+    s.PushBack(n);
+
+    // 后序遍历
+    while (!s.IsEmpty())
+    {
+        if (NULL != n->right)
+        {
+            s.PushBack(n->right);
+        }
+        if (NULL != n->left)
+        {
+            s.PushBack(n->left);
+        }
+        n = s.PopUp();
+        printf("%d ", n->value);
+    }
+
+
+#if 0
+    // 前序遍历
+    while (!s.IsEmpty())
+    {
+        n = s.PopUp();
+        printf("%d ", n->value);
+        if (NULL != n->right)
+        {
+            s.PushBack(n->right);
+        }
+        if (NULL != n->left)
+        {
+            s.PushBack(n->left);
+        }
+    }
+#endif
+}
+
+void ReadTreeDepthRecur(struct TreeNode *root)
+{
+    if (NULL == root)
+    {
+        return;
+    }
+    
+    ReadTreeDepthRecur(root->left);
+    ReadTreeDepthRecur(root->right);
+    printf("%d ", root->value);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-    BackupMgr bm(L"D:\\testgit3");
-    bm.AddFile(L"D:\\ErrorReportUtils.java", L"ErrorReportUtils.java");
-    bm.AddFile(L"D:\\FileBuf.txt", L"FileBuf.txt");
-    bm.AddFile(L"D:\\2012-10-30-17-06-小米_M1.zip", L"2012-10-30-17-06-小米_M1.zip");
-    object_id id;
-    bm.Finish(id);
-	return 0;
+    srand ( time(NULL) );
+    struct TreeNode *n = new struct TreeNode;
+    n->left = NULL;
+    n->right = NULL;
+    n->value = rand()%1000;
+    CreateTempTree(n, 3);
+
+    QueueA<struct TreeNode *> q;
+
+    ReadTreeDepthRecur(n);
+    printf("\n");
+    ReadTreeDepth(n);
+    return 0;
 }
 

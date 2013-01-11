@@ -12,5 +12,7 @@
 
 
 #include "hm_interface.h"
+#include "Queue.h"
+#include "Stack.h"
 using namespace hm;
 // TODO: reference additional headers your program requires here

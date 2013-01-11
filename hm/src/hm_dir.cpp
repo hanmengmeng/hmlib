@@ -225,9 +225,25 @@ t_string DirUtil::MakeFilePath( const t_string &dirPath, const t_string &fileNam
     return strDirPath;
 }
 
-bool DirUtil::DeleteFile( const t_string &filePath )
+bool DirUtil::DeleteFileIfExist( const t_string &filePath )
 {
-    return ::DeleteFileW(filePath.c_str());
+    if (IsFileExist(filePath))
+    {
+        return ::DeleteFileW(filePath.c_str());
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool DirUtil::CreateDirectory( const t_string &dirPath )
+{
+    if (!CreateParentDirectory(dirPath))
+    {
+        return false;
+    }
+    return ::CreateDirectory(dirPath.c_str(), NULL) == TRUE;
 }
 
 

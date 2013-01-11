@@ -22,8 +22,9 @@ public:
     static bool CreateParentDirectory(const t_string &path);
     static bool MakeTempFile(t_string &dirPath);
     static bool MoveFile(const t_string &fromPath, const t_string &toPath);
-    static bool DeleteFile(const t_string &filePath);
+    static bool DeleteFileIfExist(const t_string &filePath);
     static t_string MakeFilePath(const t_string &dirPath, const t_string &fileName);
+    static bool CreateDirectory(const t_string &dirPath);
 
     // Make path to use backslash
     static t_string MakePathRegular(const t_string &path);

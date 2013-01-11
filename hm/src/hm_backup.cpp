@@ -187,7 +187,7 @@ bool DirectBlob::CreateBlobFile( object_id &outObjId, HashFileBuf *fb )
     }
     else
     {
-        DirUtil::DeleteFile(tmpFilePath);
+        DirUtil::DeleteFileIfExist(tmpFilePath);
         return true; // Blob file already exist
     }
 }
