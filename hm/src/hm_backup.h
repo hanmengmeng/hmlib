@@ -87,8 +87,8 @@ public:
     virtual bool GetTagList(std::vector<t_string> &tags);
     virtual bool RetrieveFile(const object_id &oid, const t_char *destPath);
     virtual bool RetrieveFile(const t_char *relPath, const t_char *destPath);
-
     bool SetTag(const t_char *tagName);
+
 private:
     void InitFileEntry(FileEntry *fe, const struct _stat64 *st);
     t_string GetTagPath();
@@ -97,7 +97,6 @@ private:
 
 private:
     FileIndex *mFi;
-    //IBlob *mBlober;
     t_error mLastError;
     t_string mBackupDir;
 };

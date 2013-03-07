@@ -1,6 +1,7 @@
 #include "hm_backup.h"
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "hm_file_buf.h"
 #include "hm_string.h"
@@ -750,7 +751,25 @@ bool BackupMgr::RetrieveFile( const object_id &oid, const t_char *destPath )
 
 bool BackupMgr::RetrieveFile( const t_char *relPath, const t_char *destPath )
 {
-    return false;
+    if (NULL == mFi)
+    {
+        return false;
+    }
+    assert(NULL != mFi);
+
+    int pos = mFi->Find(relPath);
+    if (pos < 0)
+    {
+        return false;
+    }
+
+    FileEntry *fe = mFi->Get(pos);
+    if (NULL == fe)
+    {
+        return false;
+    }
+
+    return RetrieveFile(fe->oid, destPath);
 }
 
 t_string BackupMgr::GetTagPath()
@@ -768,15 +787,23 @@ bool BackupMgr::SetTag( const t_char *tagName )
     }
 
     DirectBlob db(mBackupDir.c_str(), oid);
-    const int bufLen = db.GetBlobSize();
+    const size_t bufLen = db.GetBlobSize();
+    if (0 == bufLen)
+    {
+        return false;
+    }
+
     char *blobBuf = new char[bufLen];
     if (db.Read(blobBuf, bufLen) == bufLen)
     {
-        delete mFi;
+        if (NULL != mFi)
+        {
+            delete mFi;
+        }
         mFi = new FileIndex(blobBuf, bufLen);
     }
     delete []blobBuf;
-    return false;
+    return true;
 }
 
 bool BackupMgr::GetTagOid( const t_string &tagName, object_id &oid )

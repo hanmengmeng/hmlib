@@ -85,7 +85,14 @@ std::wstring StringConvert::ToUtf16()
 {
     if (!mStrA.empty())
     {
-        return AnsiToUnicode(mStrA.c_str());
+        if (mIsUtf8)
+        {
+            return Utf8ToUnicode(mStrA.c_str());
+        }
+        else
+        {
+            return AnsiToUnicode(mStrA.c_str());
+        }
     }
     else if (!mStrW.empty())
     {

@@ -203,32 +203,46 @@ void ReadTreeDepthRecur(struct TreeNode *root)
 void AddFiles()
 {
     BackupMgr bm(L"D:\\testgit3");
-    bm.AddFile(L"D:\\GoHome4XM.jar", L"GoHome4XM.jar");
-    bm.AddFile(L"D:\\code_1.png", L"code_1.png");
-    bm.AddFile(L"D:\\2012-10-30-17-06-小米_M1.zip", L"2012-10-30-17-06-小米_M1.zip");
-    bm.AddFile(L"D:\\1.jpg", L"1.jpg");
+    std::vector<t_string> fileList;
+
+    t_string path = L"D:\\备份";
+    DirUtil::EnumFiles(path, fileList);
+    for (size_t i = 0; i < fileList.size(); i++)
+    {
+        t_string p = fileList.at(i);
+        if (DirUtil::IsDirectoryExist(p))
+        {
+            bm.AddDir(p.c_str(), p.substr(path.size()+1).c_str());
+        }
+        else
+        {
+            bm.AddFile(p.c_str(), p.substr(path.size()+1).c_str());
+        }
+    }
+
     bm.Finish("201301242008");
 }
 
 void RestoreFiles()
 {
     BackupMgr bm(L"D:\\testgit3");
-    bm.SetTag(L"201301211951");
+    bm.SetTag(L"201301242008");
 
     FileEntryList files;
     bm.GetFileList(files);
-    bm.RetrieveFile(files.at(3).oid, L"D:\\output\\a");
+    
+    for (size_t i = 0; i < files.size(); i++)
+    {
+        t_string outpath = L"D:\\output\\";
+        outpath += StringConvert(files.at(i).path).ToUtf16();
+        bm.RetrieveFile(files.at(i).oid, outpath.c_str());
+    }
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-#if 0
+    //AddFiles();
     RestoreFiles();
-    BackupMgr bm(L"D:\\testgit3");
-    std::vector<t_string> tags;
-    bm.GetTagList(tags);
-#endif
-    DirUtil::DeleteDirectory(L"D:\\testgit3");
     return 0;
 }
 

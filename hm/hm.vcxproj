@@ -45,14 +45,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\ThirdParty\rapidxml;.\ThirdParty\sha1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\ThirdParty\rapidxml;.\ThirdParty\sha1;.\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;libeay32MT.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\ThirdParty\openssl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -64,7 +65,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\ThirdParty\rapidxml;.\ThirdParty\sha1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\ThirdParty\rapidxml;.\ThirdParty\sha1;.\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -73,13 +74,15 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;libeay32MT.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\ThirdParty\openssl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hm_cipher.h" />
     <ClInclude Include="hm_thread.h" />
     <ClInclude Include="src\hm_backup.h" />
     <ClInclude Include="src\hm_common.h" />
@@ -92,6 +95,7 @@
     <ClInclude Include="ThirdParty\sha1\sha1.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="hm_cipher.cpp" />
     <ClCompile Include="hm_thread.cpp" />
     <ClCompile Include="src\hm_backup.cpp" />
     <ClCompile Include="src\hm_dir.cpp" />

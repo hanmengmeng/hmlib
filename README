@@ -10,8 +10,8 @@ Avoid reinventing wheel at work.
 4. Http access
 5. File multithread download
 6. Thread (ok)
-7. File backup and restore
-8. Cipher
+7. File backup and restore (ok)
+8. Cipher (ok)
 9. Log print
 10. Memory pool
 11. Json read and write
