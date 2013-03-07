@@ -13,8 +13,9 @@ public:
     ~DirUtil();
 
     static bool EnumFiles(const t_string &path, std::vector<t_string> &fileList);
+    static bool EnumFileNames(const t_string &path, std::vector<t_string> &fileList);
     static bool EnumDirs(const t_string &path, std::vector<t_string> &dirList);
-    static bool EnumAllFiles(const t_string &path, std::vector<t_string> &fileList);
+    static bool EnumFilesRecursion(const t_string &path, std::vector<t_string> &fileList);
     static bool DeleteDirectory(const t_string &path);
     static bool MoveDirectory(const t_string &fromPath, const t_string &toPath);
     static bool IsDirectoryExist(const t_string &path);
@@ -34,9 +35,22 @@ private:
     {
         ENUM_FILE = 1 << 1, // Only enumerate files under the path
         ENUM_DIR = 1 << 2,  // Only enumerate directory under the path
+        ENUM_ONLY_FILE_NAME = 1 << 3,
     };
     static bool EnumFilesOrDir(const t_string &path, std::vector<t_string> &fileList, int enumType);
 };
+
+class AutoTempFile
+{
+public:
+    AutoTempFile();
+    ~AutoTempFile();
+    const t_string &GetFilePath();
+
+private:
+    t_string mFilePath;
+};
+
 }
 
 #endif

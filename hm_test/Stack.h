@@ -63,6 +63,19 @@ public:
         }
     }
 
+    T Top()
+    {
+        assert(mSize > 0);
+        if (mSize > 0)
+        {
+            return mTop->value;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
     size_t GetSize()
     {
         return mSize;

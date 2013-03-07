@@ -3,8 +3,7 @@
 #include <Windows.h>
 #include <tchar.h>
 
-namespace hm
-{
+using namespace hm;
 
 FileBuf::FileBuf( const t_char *path, int mode )
 {
@@ -288,4 +287,3 @@ void HashFileBuf::HashReset()
     mHash.Reset();
 }
 
-}

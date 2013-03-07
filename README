@@ -9,7 +9,7 @@ Avoid reinventing wheel at work.
 3. Xml read and write (ok)
 4. Http access
 5. File multithread download
-6. Thread
+6. Thread (ok)
 7. File backup and restore
 8. Cipher
 9. Log print

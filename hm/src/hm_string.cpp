@@ -2,8 +2,8 @@
 #include <vector>
 #include <Windows.h>
 
-namespace hm
-{
+using namespace hm;
+
 StringConvert::StringConvert(const char *str)
 {
     if (NULL == str)
@@ -81,7 +81,7 @@ std::string StringConvert::ToUtf8()
     }
 }
 
-std::wstring StringConvert::ToUnicode()
+std::wstring StringConvert::ToUtf16()
 {
     if (!mStrA.empty())
     {
@@ -218,4 +218,15 @@ std::string StringConvert::Utf8ToMb( const char *buf )
     return UnicodeToAnsi(wstr.c_str());
 }
 
+std::string &hm::ToLower(std::string &s)
+{
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
 }
+
+std::string &hm::ToUpper(std::string &s)
+{
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    return s;
+}
+

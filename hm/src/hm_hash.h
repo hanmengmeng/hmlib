@@ -3,10 +3,11 @@
 
 #include "hm_common.h"
 
+class Sha1HashImpl;
+
 namespace hm
 {
 
-class Sha1HashImpl;
 class Sha1Hash
 {
 public:
@@ -17,7 +18,8 @@ public:
     void Update(const void *data, t_size len);
     void Final(unsigned char out[HASH_SHA1_LEN]);
 
-    static std::string ToString(const object_id &oid);
+    static std::string OidToString(const object_id &oid);
+    static object_id StringToOid(const std::string &strOid);
 private:
     Sha1HashImpl *mHashImpl;
 };

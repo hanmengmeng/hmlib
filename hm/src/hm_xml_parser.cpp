@@ -9,6 +9,8 @@
 using namespace rapidxml;
 using namespace std;
 
+using namespace hm;
+
 namespace hm
 {
 
@@ -30,6 +32,7 @@ bool operator== (const Node &n1, const Node &n2)
     {
         return false;
     }
+}
 }
 
 class XmlParserImpl : public IXmlParser
@@ -228,7 +231,5 @@ bool XmlParser::ReadNodes( std::vector<Node> &nodes )
 bool XmlParser::RemoveNode( const Node &n )
 {
     return impl->RemoveNode(n);
-}
-
 }
 

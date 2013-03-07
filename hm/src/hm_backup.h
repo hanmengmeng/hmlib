@@ -25,6 +25,8 @@ typedef struct _FileEntry {
     char *path;
 } FileEntry;
 
+typedef std::vector<FileEntry> FileEntryList;
+
 class IBackup
 {
 public:
@@ -35,9 +37,12 @@ public:
     virtual bool AddFile(const t_char *filePath, const t_char *relPath) = 0;
     virtual bool AddFile(const t_char *filePath, const t_char *relPath, const struct _stat64 *st) = 0;
     virtual bool RemoveFile(const t_char *relPath) = 0;
-    virtual bool Finish(object_id &oid) = 0;
-    virtual int GetFileList(const object_id &indexOid, std::vector<FileEntry> &fileList) = 0;
+    virtual bool Finish(const char *tagName) = 0;
+    virtual int GetFileList(FileEntryList &fileList) = 0;
     virtual t_error GetLastError() = 0;
+    virtual bool GetTagList(std::vector<t_string> &tags) = 0;
+    virtual bool RetrieveFile(const object_id &oid, const t_char *destPath) = 0;
+    virtual bool RetrieveFile(const t_char *relPath, const t_char *destPath) = 0;
 };
 
 class IBlob
@@ -76,12 +81,19 @@ public:
     virtual bool AddFile(const t_char *filePath, const t_char *relPath);
     virtual bool AddFile(const t_char *filePath, const t_char *relPath, const struct _stat64 *st);
     virtual bool RemoveFile(const t_char *relPath);
-    virtual bool Finish(object_id &oid);
-    virtual int GetFileList(const object_id &indexOid, std::vector<FileEntry> &fileList);
+    virtual bool Finish(const char *tagName);
+    virtual int GetFileList(FileEntryList &fileList);
     virtual t_error GetLastError();
-    virtual void GetTagList(std::vector<std::string> &tags);
+    virtual bool GetTagList(std::vector<t_string> &tags);
+    virtual bool RetrieveFile(const object_id &oid, const t_char *destPath);
+    virtual bool RetrieveFile(const t_char *relPath, const t_char *destPath);
 
+    bool SetTag(const t_char *tagName);
+private:
     void InitFileEntry(FileEntry *fe, const struct _stat64 *st);
+    t_string GetTagPath();
+    bool GetTagOid(const t_string &tagName, object_id &oid);
+    bool GetTagOid(const t_string &tagName, std::string &oid);
 
 private:
     FileIndex *mFi;

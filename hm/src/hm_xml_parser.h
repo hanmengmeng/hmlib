@@ -6,6 +6,7 @@
 
 #include "hm_common.h"
 
+class XmlParserImpl;
 namespace hm
 {
 
@@ -36,8 +37,6 @@ public:
     // Remove the first node that matches parameter n
     virtual bool RemoveNode(const Node &n) = 0;
 };
-
-class XmlParserImpl;
 
 class XmlParser : public IXmlParser
 {

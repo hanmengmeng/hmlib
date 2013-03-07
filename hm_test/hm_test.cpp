@@ -41,7 +41,7 @@ void TestRemoveNode()
 void TestStringConvert()
 {
     std::string str = "中国ab";
-    std::wstring wstr = StringConvert(str.c_str()).ToUnicode();
+    std::wstring wstr = StringConvert(str.c_str()).ToUtf16();
     LPCTSTR lp = wstr.c_str();
     std::string u8str = StringConvert(str.c_str()).ToUtf8();
     LPCSTR lp2 = u8str.c_str();
@@ -56,7 +56,7 @@ void TestEnumDir()
     DirUtil::EnumDirs(L"D:\\workspace", dirList);
 
     std::vector<t_string> fileList2;
-    DirUtil::EnumAllFiles(L"D:\\workspace\\apache-log4cxx-0.10.0", fileList2);
+    DirUtil::EnumFilesRecursion(L"D:\\workspace\\apache-log4cxx-0.10.0", fileList2);
 }
 
 void TestDeleteDirectory()
@@ -111,26 +111,27 @@ void CreateTempTree(struct TreeNode *node, int depth)
     CreateTempTree(node->right, depth - 1);
 }
 
-void ReadTreeWide(struct TreeNode *root, QueueA<struct TreeNode *> *q)
+void ReadTreeWide(struct TreeNode *root)
 {
     if (0 == root)
     {
         return;
     }
 
-    q->PushBack(root);
+    QueueA<struct TreeNode *> q;
+    q.PushBack(root);
 
-    while (q->GetSize() > 0)
+    while (q.GetSize() > 0)
     {
-        struct TreeNode *tn = q->PopFront();
+        struct TreeNode *tn = q.PopFront();
         printf("%d ", tn->value);
         if (NULL != tn->left)
         {
-            q->PushBack(tn->left);
+            q.PushBack(tn->left);
         }
         if (NULL != tn->right)
         {
-            q->PushBack(tn->right);
+            q.PushBack(tn->right);
         }
     }
 }
@@ -142,24 +143,32 @@ void ReadTreeDepth(struct TreeNode *root)
         return;
     }
     Stack<struct TreeNode*> s;
+    Stack<struct TreeNode*> s2;
     struct TreeNode *n = root;
-    s.PushBack(n);
 
     // 后序遍历
-    while (!s.IsEmpty())
+    while (NULL != n)
     {
-        if (NULL != n->right)
-        {
-            s.PushBack(n->right);
-        }
         if (NULL != n->left)
         {
             s.PushBack(n->left);
+            n = n->left;
         }
-        n = s.PopUp();
-        printf("%d ", n->value);
+        else if (NULL != n->right)
+        {
+            s.PushBack(n->right);
+            n = n->right;
+        }
+        else
+        {
+            n = NULL;
+        }
     }
 
+    while (!s.IsEmpty())
+    {
+        printf("%d ", s.PopUp()->value);
+    }
 
 #if 0
     // 前序遍历
@@ -191,20 +200,35 @@ void ReadTreeDepthRecur(struct TreeNode *root)
     printf("%d ", root->value);
 }
 
+void AddFiles()
+{
+    BackupMgr bm(L"D:\\testgit3");
+    bm.AddFile(L"D:\\GoHome4XM.jar", L"GoHome4XM.jar");
+    bm.AddFile(L"D:\\code_1.png", L"code_1.png");
+    bm.AddFile(L"D:\\2012-10-30-17-06-小米_M1.zip", L"2012-10-30-17-06-小米_M1.zip");
+    bm.AddFile(L"D:\\1.jpg", L"1.jpg");
+    bm.Finish("201301242008");
+}
+
+void RestoreFiles()
+{
+    BackupMgr bm(L"D:\\testgit3");
+    bm.SetTag(L"201301211951");
+
+    FileEntryList files;
+    bm.GetFileList(files);
+    bm.RetrieveFile(files.at(3).oid, L"D:\\output\\a");
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-    srand ( time(NULL) );
-    struct TreeNode *n = new struct TreeNode;
-    n->left = NULL;
-    n->right = NULL;
-    n->value = rand()%1000;
-    CreateTempTree(n, 3);
-
-    QueueA<struct TreeNode *> q;
-
-    ReadTreeDepthRecur(n);
-    printf("\n");
-    ReadTreeDepth(n);
+#if 0
+    RestoreFiles();
+    BackupMgr bm(L"D:\\testgit3");
+    std::vector<t_string> tags;
+    bm.GetTagList(tags);
+#endif
+    DirUtil::DeleteDirectory(L"D:\\testgit3");
     return 0;
 }
 

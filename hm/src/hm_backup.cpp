@@ -52,7 +52,7 @@ private:
 private:
     t_char *mIndexFilePath;
     time_t mLastModified;
-    std::vector<FileEntry> mEntries;
+    FileEntryList mEntries;
 };
 
 class DirectBlob : public IBlob
@@ -82,6 +82,22 @@ private:
 private:
     t_string mBackupDir;
     HashFileBuf *mFileBuf;
+};
+
+typedef struct
+{
+    unsigned int removed;
+    unsigned int attr;
+    object_id oid;
+    size_t filename_len;
+    char filename[1];
+}TreeEntry;
+
+typedef std::vector<TreeEntry> TreeEntryList;
+class FileTree
+{
+public:
+
 };
 
 DirectBlob::DirectBlob( const t_char *blobDir, t_size fileSize )
@@ -178,7 +194,7 @@ bool DirectBlob::CreateBlobFile( object_id &outObjId, HashFileBuf *fb )
     memcpy(&outObjId, sha1, HASH_SHA1_LEN);
     fb->Close();
 
-    t_string strObjId = StringConvert(Sha1Hash::ToString(outObjId).c_str()).ToUnicode();
+    t_string strObjId = StringConvert(Sha1Hash::OidToString(outObjId).c_str()).ToUtf16();
     t_string targetPath = DirUtil::MakeFilePath(mBackupDir, strObjId);
 
     if (!DirUtil::IsFileExist(targetPath))
@@ -227,7 +243,7 @@ t_size DirectBlob::Read( void *buf, t_size len )
 
 t_string DirectBlob::GetBlobPath( const object_id &oid )
 {
-    t_string oidName = StringConvert(Sha1Hash::ToString(oid)).ToUnicode();
+    t_string oidName = StringConvert(Sha1Hash::OidToString(oid)).ToUtf16();
     return DirUtil::MakeFilePath(mBackupDir, oidName);
 }
 
@@ -268,7 +284,7 @@ t_size DirectBlob::GetBlobSize()
     {
         return 0;
     }
-    return mFileBuf->GetFileSize();
+    return mFileBuf->GetFileSize() - BLOB_FILE_HEADER_LEN;
 }
 
 FileIndex::FileIndex( const t_char *indexFilePath )
@@ -498,7 +514,7 @@ t_size FileIndex::GetEntryCount()
 
 FileEntry *FileIndex::Get( t_size pos )
 {
-    if (mEntries.size() > 0 && pos >= mEntries.size())
+    if (mEntries.size() > 0 && pos < mEntries.size())
     {
         return &mEntries.at(pos);
     }
@@ -629,10 +645,10 @@ bool BackupMgr::AddFile( const t_char *filePath, const t_char *relPath, const st
 
 bool BackupMgr::RemoveFile( const t_char *relPath )
 {
-    return 0;
+    return mFi->Remove(relPath);
 }
 
-bool BackupMgr::Finish( object_id &oid )
+bool BackupMgr::Finish( const char *tagName )
 {
     if (!mFi->Save(mFi->GetIndexPath()))
     {
@@ -645,27 +661,35 @@ bool BackupMgr::Finish( object_id &oid )
     }
 
     DirectBlob db(mBackupDir.c_str(), st.st_size);
+    object_id oid;
     if (!db.CreateBlob(oid, mFi->GetIndexPath()))
     {
         return false;
     }
 
     // Create tag file at [BackupDir]/tags/ directory
-    t_string tagPath = DirUtil::MakeFilePath(mBackupDir, L"tags");
-    t_string strOid = StringConvert(Sha1Hash::ToString(oid).c_str()).ToUnicode();
-    t_string tagFilePath = DirUtil::MakeFilePath(tagPath, strOid);
+    t_string tagPath = GetTagPath();
+    //t_string strOid = StringConvert(Sha1Hash::OidToString(oid).c_str()).ToUnicode();
+    t_string strTag = StringConvert(tagName).ToUtf16();
+    t_string tagFilePath = DirUtil::MakeFilePath(tagPath, strTag);
     if (!DirUtil::CreateParentDirectory(tagFilePath))
     {
         return false;
     }
-    FileBuf fb(tagFilePath.c_str(), FileBuf::FILE_MODE_WRITE); // Create empty file
+    FileBuf fb(tagFilePath.c_str(), FileBuf::FILE_MODE_WRITE);
+    std::string strOid = Sha1Hash::OidToString(oid);
+    fb.Write((void*)strOid.c_str(),strOid.size());
     return true;
 }
 
-int BackupMgr::GetFileList( const object_id &indexOid, std::vector<FileEntry> &fileList )
+int BackupMgr::GetFileList( FileEntryList &fileList )
 {
-
-    return 0;
+    fileList.clear();
+    for (size_t i = 0; i < mFi->GetEntryCount(); i++)
+    {
+        fileList.push_back(*mFi->Get(i));
+    }
+    return fileList.size();
 }
 
 t_error BackupMgr::GetLastError()
@@ -686,9 +710,109 @@ void BackupMgr::InitFileEntry( FileEntry *fe, const struct _stat64 *st )
     fe->uid = st->st_uid;
 }
 
-void BackupMgr::GetTagList( std::vector<std::string> &tags )
+bool BackupMgr::GetTagList( std::vector<t_string> &tags )
 {
+    t_string tagPath = GetTagPath();
+    //std::vector<t_string> fileList;
+    if (DirUtil::EnumFileNames(tagPath, tags))
+    {
+#if 0
+        for (size_t i = 0; i < fileList.size(); i++)
+        {
+            std::string oid;
+            if (!GetTagOid(fileList.at(i), oid))
+            {
+                continue;
+            }
+            tags.push_back(StringConvert(oid).ToUtf16());
+        }
+#endif
+    }
+    return tags.size() > 0;
+}
 
+bool BackupMgr::RetrieveFile( const object_id &oid, const t_char *destPath )
+{
+    DirectBlob db(mBackupDir.c_str(), oid);
+    FileBuf fb(destPath, FileBuf::FILE_MODE_WRITE);
+    const size_t BufSize = 4096;
+    char buf[BufSize];
+    size_t readlen = 0;
+    while ((readlen = db.Read(buf, BufSize)) > 0)
+    {
+        if (readlen != fb.Write(buf, readlen))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool BackupMgr::RetrieveFile( const t_char *relPath, const t_char *destPath )
+{
+    return false;
+}
+
+t_string BackupMgr::GetTagPath()
+{
+    return DirUtil::MakeFilePath(mBackupDir, L"tags");
+}
+
+bool BackupMgr::SetTag( const t_char *tagName )
+{
+    // Generate oid
+    object_id oid;
+    if (!GetTagOid(tagName, oid))
+    {
+        return false;
+    }
+
+    DirectBlob db(mBackupDir.c_str(), oid);
+    const int bufLen = db.GetBlobSize();
+    char *blobBuf = new char[bufLen];
+    if (db.Read(blobBuf, bufLen) == bufLen)
+    {
+        delete mFi;
+        mFi = new FileIndex(blobBuf, bufLen);
+    }
+    delete []blobBuf;
+    return false;
+}
+
+bool BackupMgr::GetTagOid( const t_string &tagName, object_id &oid )
+{
+    char tagOidBuf[HASH_SHA1_STRING_LEN+1];
+    tagOidBuf[HASH_SHA1_STRING_LEN] = '\0';
+
+    t_string tagFilePath = DirUtil::MakeFilePath(GetTagPath(), tagName);
+    FileBuf fb(tagFilePath.c_str(), FileBuf::FILE_MODE_READ);
+    if (HASH_SHA1_STRING_LEN == fb.Read(tagOidBuf, HASH_SHA1_STRING_LEN))
+    {
+        oid = Sha1Hash::StringToOid(tagOidBuf);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool BackupMgr::GetTagOid( const t_string &tagName, std::string &oid )
+{
+    char tagOidBuf[HASH_SHA1_STRING_LEN+1];
+    tagOidBuf[HASH_SHA1_STRING_LEN] = '\0';
+
+    t_string tagFilePath = DirUtil::MakeFilePath(GetTagPath(), tagName);
+    FileBuf fb(tagFilePath.c_str(), FileBuf::FILE_MODE_READ);
+    if (HASH_SHA1_STRING_LEN == fb.Read(tagOidBuf, HASH_SHA1_STRING_LEN))
+    {
+        oid = tagOidBuf;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 IBlob* BlobObjectFactory::GetDirectBlob()

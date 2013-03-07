@@ -1,11 +1,13 @@
 #include "hm_hash.h"
+#include "hm_string.h"
+#include <assert.h>
+
 extern "C"
 {
 #include "sha1.h"
 };
 
-namespace hm
-{
+using namespace hm;
 
 class Sha1HashImpl
 {
@@ -72,7 +74,7 @@ void Sha1Hash::Reset()
     return mHashImpl->Reset();
 }
 
-std::string Sha1Hash::ToString(const object_id &oid)
+std::string Sha1Hash::OidToString(const object_id &oid)
 {
     char to_hex[] = "0123456789abcdef";
     char str[HASH_SHA1_STRING_LEN+1];
@@ -89,5 +91,52 @@ std::string Sha1Hash::ToString(const object_id &oid)
     return str;
 }
 
-} // namespace hm
+static char from_hex(char c)
+{
+    char h = 0;
+    switch (c)
+    {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        h = c - '0';
+        break;
+    case 'a':
+    case 'b':
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+        h = c - 'a' + 10;
+        break;
+    default:
+        assert(0);
+        break;
+    }
+    return h;
+}
+
+object_id Sha1Hash::StringToOid( const std::string &strOid )
+{
+    assert(strOid.length() >= sizeof(object_id)*2);
+    std::string str = strOid;
+    ToLower(str);
+
+    object_id ret;
+    for (t_size i = 0, j = 0; i < sizeof(ret.id); i++, j+=2)
+    {
+        ret.id[i] |= 0xff;
+        ret.id[i] &= (from_hex(str.at(j)) << 4);
+        ret.id[i] |= from_hex(str.at(j+1));
+    }
+    return ret;
+}
+
 

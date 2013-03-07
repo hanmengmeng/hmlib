@@ -4,8 +4,7 @@
 
 #define DEFAULT_PATH_SPLITER _T('\\')
 
-namespace hm
-{
+using namespace hm;
 
 bool DirUtil::EnumFiles( const t_string &path, std::vector<t_string> &fileList )
 {
@@ -17,7 +16,7 @@ bool DirUtil::EnumDirs( const t_string &path, std::vector<t_string> &dirList )
     return EnumFilesOrDir(path, dirList, ENUM_DIR);
 }
 
-bool DirUtil::EnumAllFiles( const t_string &path, std::vector<t_string> &fileList )
+bool DirUtil::EnumFilesRecursion( const t_string &path, std::vector<t_string> &fileList )
 {
     if (!EnumFiles(path, fileList))
     {
@@ -33,7 +32,7 @@ bool DirUtil::EnumAllFiles( const t_string &path, std::vector<t_string> &fileLis
     bool ret = true;
     for (t_size i = 0; i < dirList.size(); i++)
     {
-        if (!EnumAllFiles(dirList.at(i), fileList))
+        if (!EnumFilesRecursion(dirList.at(i), fileList))
         {
             ret = false;
             break;
@@ -44,6 +43,7 @@ bool DirUtil::EnumAllFiles( const t_string &path, std::vector<t_string> &fileLis
 
 bool DirUtil::DeleteDirectory( const t_string &path )
 {
+#if 0
     SHFILEOPSTRUCT FileOp;
     ZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));
 
@@ -60,6 +60,42 @@ bool DirUtil::DeleteDirectory( const t_string &path )
     FileOp.wFunc = FO_DELETE;
 
     return SHFileOperation(&FileOp) == 0;
+#endif
+    bool ret = true;
+    std::vector<t_string> fileList;
+    std::vector<t_string> dirList;
+    if (EnumFiles(path, fileList))
+    {
+        for (size_t i = 0; i < fileList.size(); i++)
+        {
+            if (!DeleteFileIfExist(fileList.at(i)))
+            {
+                ret = false;
+                break;
+            }
+        }
+    }
+    if (!ret)
+    {
+        return false;
+    }
+
+    if (EnumDirs(path, dirList))
+    {
+        for (size_t i = 0; i < dirList.size(); i++)
+        {
+            if (!DeleteDirectory(dirList.at(i)))
+            {
+                ret = false;
+                break;
+            }
+        }
+    }
+    if (!ret)
+    {
+        return false;
+    }
+    return ::RemoveDirectory(path.c_str()) ? true : false;
 }
 
 bool DirUtil::MoveDirectory( const t_string &fromPath, const t_string &toPath )
@@ -162,9 +198,16 @@ bool DirUtil::EnumFilesOrDir( const t_string &path, std::vector<t_string> &fileL
         {
             if (!(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
             {
-                t_string fp = strDirPath;
-                fp.append(fd.cFileName);
-                fileList.push_back(fp);
+                if (ENUM_ONLY_FILE_NAME & enumType)
+                {
+                    fileList.push_back(fd.cFileName);
+                }
+                else
+                {
+                    t_string fp = strDirPath;
+                    fp.append(fd.cFileName);
+                    fileList.push_back(fp);
+                }
             }
         }
 
@@ -174,9 +217,16 @@ bool DirUtil::EnumFilesOrDir( const t_string &path, std::vector<t_string> &fileL
                 && _tcscmp(fd.cFileName, _T("..")) != 0
                 && (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             {
-                t_string fp = strDirPath;
-                fp.append(fd.cFileName);
-                fileList.push_back(fp);
+                if (ENUM_ONLY_FILE_NAME & enumType)
+                {
+                    fileList.push_back(fd.cFileName);
+                }
+                else
+                {
+                    t_string fp = strDirPath;
+                    fp.append(fd.cFileName);
+                    fileList.push_back(fp);
+                }
             }
         }
 
@@ -229,11 +279,19 @@ bool DirUtil::DeleteFileIfExist( const t_string &filePath )
 {
     if (IsFileExist(filePath))
     {
-        return ::DeleteFileW(filePath.c_str());
+        if (!::DeleteFile(filePath.c_str()))
+        {
+            _tchmod(filePath.c_str(), 0777);
+            return ::DeleteFile(filePath.c_str()) ? true : false;
+        }
+        else
+        {
+            return true;
+        }
     }
     else
     {
-        return true;
+        return false;
     }
 }
 
@@ -255,4 +313,28 @@ hm::DirUtil::~DirUtil()
 {
 }
 
-} // namespace hm
+bool hm::DirUtil::EnumFileNames( const t_string &path, std::vector<t_string> &fileList )
+{
+    return EnumFilesOrDir(path, fileList, ENUM_FILE|ENUM_ONLY_FILE_NAME);
+}
+
+hm::AutoTempFile::AutoTempFile()
+{
+    if (!DirUtil::MakeTempFile(mFilePath))
+    {
+        mFilePath = _T("");
+    }
+}
+
+hm::AutoTempFile::~AutoTempFile()
+{
+    if (!mFilePath.empty())
+    {
+        DirUtil::DeleteFileIfExist(mFilePath);
+    }
+}
+
+const t_string &hm::AutoTempFile::GetFilePath()
+{
+    return mFilePath;
+}

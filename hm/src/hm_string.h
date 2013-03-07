@@ -22,7 +22,7 @@ public:
     ~StringConvert();
 
     std::string ToUtf8();
-    std::wstring ToUnicode();
+    std::wstring ToUtf16();
     std::string ToAnsi();
 
 private:
@@ -56,6 +56,9 @@ static inline std::string &rtrim(std::string &s) {
 static inline std::string &trim(std::string &s) {
     return ltrim(rtrim(s));
 }
+
+std::string &ToLower(std::string &s);
+std::string &ToUpper(std::string &s);
 
 }
 #endif
