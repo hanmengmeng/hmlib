@@ -84,6 +84,8 @@
   <ItemGroup>
     <ClInclude Include="hm_cipher.h" />
     <ClInclude Include="hm_thread.h" />
+    <ClInclude Include="hm_thread_pool.h" />
+    <ClInclude Include="hm_utils.h" />
     <ClInclude Include="src\hm_backup.h" />
     <ClInclude Include="src\hm_common.h" />
     <ClInclude Include="src\hm_dir.h" />
@@ -97,6 +99,7 @@
   <ItemGroup>
     <ClCompile Include="hm_cipher.cpp" />
     <ClCompile Include="hm_thread.cpp" />
+    <ClCompile Include="hm_thread_pool.cpp" />
     <ClCompile Include="src\hm_backup.cpp" />
     <ClCompile Include="src\hm_dir.cpp" />
     <ClCompile Include="src\hm_file_buf.cpp" />

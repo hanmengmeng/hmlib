@@ -15,3 +15,5 @@ Avoid reinventing wheel at work.
 9. Log print
 10. Memory pool
 11. Json read and write
+12. Add zlib to backup and restore
+

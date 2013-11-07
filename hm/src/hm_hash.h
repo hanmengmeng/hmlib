@@ -24,6 +24,11 @@ private:
     Sha1HashImpl *mHashImpl;
 };
 
+class Md5
+{
+
+};
+
 } // namespace hm
 
 #endif
