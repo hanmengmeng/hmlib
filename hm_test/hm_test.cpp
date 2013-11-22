@@ -239,10 +239,26 @@ void RestoreFiles()
     }
 }
 
+void TestLogging()
+{
+    InitLogging(_T("D:\\test.log"), LOG_TO_BOTH_FILE_AND_SYSTEM_DEBUG_LOG, LOCK_LOG_FILE, APPEND_TO_OLD_LOG_FILE);
+
+    for (size_t i = 0; i < 10; i++)
+    {
+        LOG_INFO(_T("testtest"));
+
+        LOG_INFO(_T("testtest"));
+        LOG_INFO(_T("testtest111"));
+        LOG_INFO(_T("testtest111, %s, %d"), _T("hello"), 123);
+    }
+    
+    CloseLogFile();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     //AddFiles();
-    RestoreFiles();
+    TestLogging();
     return 0;
 }
 

@@ -6,5 +6,6 @@
 #include "hm_dir.h"
 #include "hm_file_buf.h"
 #include "hm_backup.h"
+#include "hm_logging.h"
 
 #endif

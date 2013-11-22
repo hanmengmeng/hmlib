@@ -5,6 +5,9 @@
 #include <Windows.h>
 #include <tchar.h>
 
+namespace hm
+{
+
 typedef unsigned long long t_long_64;
 typedef int t_error;
 typedef size_t t_size;
@@ -19,5 +22,13 @@ typedef struct object_id
 {
     unsigned char id[HASH_SHA1_LEN];
 }object_id;
+
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+    TypeName(const TypeName&);               \
+    void operator=(const TypeName&)
+
+void BreakDebugger();
+
+}
 
 #endif
